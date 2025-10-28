@@ -221,6 +221,11 @@ Scalar DotProductObjective::operator()(const Simulation &sim) const {
     sim.getLinkTransform(robot_idx, 0, base_transform);
     Vector6 base_vel;
     sim.getLinkVelocity(robot_idx, 0, base_vel);
+
+    // Clip base velocity to avoid excessive rewards
+    if(base_vel[4] < -0.1)
+      base_vel[4] = -0.1;
+
     VectorX joint_vel(dof_count);
     sim.getJointVelocities(robot_idx, joint_vel);
     VectorX motor_torques(dof_count);

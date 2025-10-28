@@ -4,6 +4,7 @@ project(RobotDesign)
 
 # Use double precision in Bullet
 add_compile_options(-DBT_USE_DOUBLE_PRECISION)
+add_compile_options(-Wno-error=maybe-uninitialized)
 
 add_subdirectory(core)
 add_subdirectory(examples/python_bindings)
