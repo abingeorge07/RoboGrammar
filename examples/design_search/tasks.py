@@ -16,9 +16,14 @@ class ForwardSpeedTask(ABC):
     self.torque_std = torque_std
 
     self.objective_fn = rd.DotProductObjective()
-    self.objective_fn.base_dir_weight = np.array([-0.0, 0.0, 0.0])
-    self.objective_fn.base_up_weight = np.array([0.0, 0.0, 0.0])
-    self.objective_fn.base_vel_weight = np.array([0.0, 2.0, 0.0])
+    # self.objective_fn.base_dir_weight = np.array([-0.0, 0.0, 0.0])
+    # self.objective_fn.base_up_weight = np.array([0.0, 0.0, 0.0])
+    # self.objective_fn.base_vel_weight = np.array([0.0, 2.0, 0.0])
+
+    # Original weights
+    self.objective_fn.base_dir_weight = np.array([2.0, 0.0, 0.0])
+    self.objective_fn.base_up_weight = np.array([0.0, 2.0, 0.0])
+    self.objective_fn.base_vel_weight = np.array([2.0, 0.0, 0.0])
 
     # Maximum reasonable result (designs achieving higher results are rejected)
     self.result_bound = 10.0
@@ -110,9 +115,9 @@ class GapTerrainTask(ForwardSpeedTask):
                  rd.Quaterniond(1.0, 0.0, 0.0, 0.0))
 
 class SteppedTerrainTask(ForwardSpeedTask):
-  """
-  Task where the objective is to move forward as quickly as possible on stepped
-  terrain.
+  """ to new values
+- Behavior:
+  - add_terrain places
   """
 
   def __init__(self, x_min=-20.0, x_max=20.0, seed=0, **kwargs):
