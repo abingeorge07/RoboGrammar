@@ -221,11 +221,7 @@ Scalar DotProductObjective::operator()(const Simulation &sim) const {
     sim.getLinkTransform(robot_idx, 0, base_transform);
     Vector6 base_vel;
     sim.getLinkVelocity(robot_idx, 0, base_vel);
-
-    // Clip base velocity to avoid excessive rewards [edit: BU]
-    // if(base_vel[4] < -0.1)
-    //   base_vel[4] = -0.1;
-
+    
     VectorX joint_vel(dof_count);
     sim.getJointVelocities(robot_idx, joint_vel);
     VectorX motor_torques(dof_count);
@@ -238,6 +234,58 @@ Scalar DotProductObjective::operator()(const Simulation &sim) const {
     reward += base_up.dot(base_up_weight_);
     // Base velocity term
     reward += base_vel.tail<3>().dot(base_vel_weight_);
+    // Power consumption term
+    Scalar power = motor_torques.dot(joint_vel);
+    reward += power_weight_ * power;
+  }
+  return reward;
+}
+
+
+// Added by BU
+// HeightObjective implementation
+Scalar HeightObjective::operator()(const Simulation &sim) const {
+  Scalar reward = 0.0;
+  float height_current;
+
+  for (Index robot_idx = 0; robot_idx < sim.getRobotCount(); ++robot_idx) {
+    int dof_count = sim.getRobotDofCount(robot_idx);
+    Matrix4 base_transform;
+    sim.getLinkTransform(robot_idx, 0, base_transform);
+    
+    // Get height from base transform
+    height_current = base_transform(1,3); // Y position of the base
+
+    Vector6 base_vel;
+    sim.getLinkVelocity(robot_idx, 0, base_vel);
+
+    VectorX joint_vel(dof_count);
+    sim.getJointVelocities(robot_idx, joint_vel);
+    VectorX motor_torques(dof_count);
+    sim.getJointMotorTorques(robot_idx, motor_torques);
+
+    if (base_vel[4] > 0.0){
+      // Height term
+      reward += height_weight_ * height_current;
+      // Base velocity term
+      reward += base_vel.tail<3>().dot(base_vel_weight_);
+
+    }
+    else
+      reward += 0.0;
+
+    // Clip base velocity to avoid excessive rewards [edit: ]
+    if(base_vel[4] < -0.1)
+      base_vel[4] = -0.1;
+
+    // Base direction term
+    Vector3 base_dir = base_transform.block<3, 1>(0, 0);
+    reward += base_dir.dot(base_dir_weight_);
+    // Base up vector term
+    Vector3 base_up = base_transform.block<3, 1>(0, 1);
+    reward += base_up.dot(base_up_weight_);
+    // // Base velocity term
+    // reward += base_vel.tail<3>().dot(base_vel_weight_);
     // Power consumption term
     Scalar power = motor_torques.dot(joint_vel);
     reward += power_weight_ * power;

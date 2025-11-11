@@ -151,8 +151,3 @@ This document summarizes what information each class in `examples/design_search/
 - `add_noise` (base class) applies per-timestep forces/torques controlled by `noise_seed`, `force_std`, and `torque_std`
 
 ---
-
-If you want any of the following, tell me which format you prefer:
-- a compact table (CSV/TSV) mapping class → attributes (types)
-- a JSON file for programmatic consumption
-- inline docstring updates inside `examples/design_search/tasks.py`

@@ -40,6 +40,12 @@ void initOptim(py::module &m) {
                     const rd::DotProductObjective &,
                     const std::shared_ptr<const rd::ValueEstimator> &,
                     const std::shared_ptr<const rd::InputSampler> &>())
+        // Added by BU for HeightObjective
+      .def(py::init<rd::Scalar, rd::Scalar, int, int, int, int, int,
+                    unsigned int, const rd::MakeSimFunction &,
+                    const rd::HeightObjective &,
+                    const std::shared_ptr<const rd::ValueEstimator> &,
+                    const std::shared_ptr<const rd::InputSampler> &>())
       .def("update", &rd::MPPIOptimizer::update,
            py::call_guard<py::gil_scoped_release>())
       .def("advance", &rd::MPPIOptimizer::advance,
@@ -66,4 +72,18 @@ void initOptim(py::module &m) {
       .def_readwrite("base_vel_weight",
                      &rd::DotProductObjective::base_vel_weight_)
       .def_readwrite("power_weight", &rd::DotProductObjective::power_weight_);
+
+    // Added by BU
+    py::class_<rd::HeightObjective>(m, "HeightObjective")
+      .def(py::init<>())
+      .def("__call__", &rd::HeightObjective::operator())
+      .def_readwrite("base_dir_weight",
+                     &rd::HeightObjective::base_dir_weight_)
+      .def_readwrite("base_up_weight",
+                     &rd::HeightObjective::base_up_weight_)
+      .def_readwrite("base_vel_weight",
+                     &rd::HeightObjective::base_vel_weight_)
+      .def_readwrite("power_weight", &rd::HeightObjective::power_weight_)
+      .def_readwrite("height_weight", &rd::HeightObjective::height_weight_)
+      .def_readwrite("time_step", &rd::HeightObjective::time_step_);
 }

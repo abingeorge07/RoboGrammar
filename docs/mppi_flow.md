@@ -90,17 +90,4 @@ This document explains precisely how and when MPPI trajectory optimization is in
   
   That pattern trades upfront computational cost for better-quality warm starts and then faster per-step updates.
 
-## Suggested next steps (if you want to inspect or debug)
-
-- Add instrumentation inside `simulate()` to log MPPI stats per `update()` call (max return, mean return, time spent). This helps verify convergence and cost.
-- Print the aggregated `objective_fn` components (base_dir, base_up, base_vel, power) each inner step on `main_sim` to understand which term dominates the optimized behavior.
-- If evaluation cost is high, try lowering the initial `sample_count` or `episode_len`, or reducing `thread_count` if CPU limits are reached.
-
 ---
-
-If you want, I can (pick one):
-- add short inline comments in `examples/design_search/design_search.py` summarizing where MPPI is created and how it is used (low-risk edit),
-- add optional logging instrumentation in `simulate()` (prints timing + top returns per `optimizer.update()`), or
-- generate a small tracer script that runs a single `simulate()` call and prints MPPI timing and reward components for one robot.
-
-Tell me which of those you'd like next and I'll implement it.
